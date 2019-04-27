@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "214486478198",
+    "firebase_url": "https://hislab-12816.firebaseio.com",
+    "project_id": "hislab-12816",
+    "storage_bucket": "hislab-12816.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214486478198:android:fbea5c057971b186",
+        "android_client_info": {
+          "package_name": "com.example.hislab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214486478198-re6ee0g1fqsh9rtf949ottk54kcpf0gk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hislab",
+            "certificate_hash": "3b3faa11071837d3c0bd45b4b86b87736c278dec"
+          }
+        },
+        {
+          "client_id": "214486478198-ca40suv067v56hmr3ph07hc7ecd1i4hu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-a97prE62lbgy9QimItf-9RUzSfF-46E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "214486478198-ca40suv067v56hmr3ph07hc7ecd1i4hu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
