@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,7 +14,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.example.hislab.Classes.Usuario;
+import com.example.hislab.DAO.UsuarioDAO;
 import com.example.hislab.R;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -47,6 +51,9 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        atualizaNavHeader();
+
     }
 
     @Override
@@ -95,17 +102,35 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        } else if( id == R.id.nav_logout ){
+        } else if (id == R.id.nav_edit) {
+//            atualizaUsuario();
+        } else if( id == R.id.nav_removeUser ){
+//            removerUsuario();
+        } else if( id == R.id.nav_logout ) {
             deslogarUsuario();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void atualizaUsuario() {
+
+        //Não vou atualizar os dados de login, apenas os perfis de controle do usuário
+
+    }
+
+    private void removerUsuario() {
+
+        UsuarioDAO.removeUsuario( autenticacao.getCurrentUser() );
+        autenticacao.getCurrentUser().delete();
+        autenticacao.signOut();
+
+        Intent intent = new Intent( ListagemPerfil.this, MainActivity.class );
+        startActivity( intent );
+        finish();
+
     }
 
     public void deslogarUsuario(){
@@ -116,4 +141,17 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
         startActivity( intent );
         finish();
     }
+
+    public void atualizaNavHeader(){
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0 );
+        TextView navName = headerView.findViewById(R.id.nomeUsuarioLogado);
+        TextView navEmail = headerView.findViewById(R.id.emailUsuarioLogado);
+
+        navName.setText( autenticacao.getCurrentUser().getDisplayName() );
+        navEmail.setText( autenticacao.getCurrentUser().getEmail() );
+
+    }
+
 }

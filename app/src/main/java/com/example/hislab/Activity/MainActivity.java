@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById( R.id.btnLogin );
         btnCadastrar = (Button) findViewById( R.id.btnCadastrar );
 
+        edtEmailLogin.setText("");
+        edtSenhaLogin.setText("");
+
         btnCadastrar.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
