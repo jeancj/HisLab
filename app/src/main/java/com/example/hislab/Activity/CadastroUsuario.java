@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.hislab.Classes.Usuario;
 import com.example.hislab.DAO.ConfiguracaoFireBase;
+import com.example.hislab.DAO.UsuarioDAO;
 import com.example.hislab.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -70,7 +71,6 @@ public class CadastroUsuario extends AppCompatActivity {
                             usuario.setDsSenha( edtCadSenha.getText().toString() );
 
                             cadastrarUsuario();
-                            //TODO definir estrutura da base de dados
 
                         } else {
                             Toast.makeText( CadastroUsuario.this, "Senha e confirmação estão diferentes!", Toast.LENGTH_SHORT ).show();
@@ -96,7 +96,16 @@ public class CadastroUsuario extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
 
                 if( task.isSuccessful() ){
-                    insereUsuario( usuario, autenticacao.getCurrentUser() );
+                    try{
+                        UsuarioDAO.insereUsuario( usuario, autenticacao.getCurrentUser() );
+                        Toast.makeText( CadastroUsuario.this, "Usuário cadastrado com sucesso!", Toast.LENGTH_LONG ).show();
+
+                        Intent intent = new Intent( CadastroUsuario.this, MainActivity.class );
+                        startActivity( intent );
+
+                    } catch( Exception e ){
+                        Toast.makeText( CadastroUsuario.this, "Erro ao gravar o usuário!", Toast.LENGTH_LONG ).show();
+                    }
                 } else {
                     String erroExcessao = "";
                     try{
@@ -117,55 +126,6 @@ public class CadastroUsuario extends AppCompatActivity {
 
             }
         });
-    }
-
-    private void insereUsuario( Usuario usuario, FirebaseUser usuarioAuth ){
-
-        try{
-            //Usa a referencia do firebase para inserir nós em usuarios
-            reference = ConfiguracaoFireBase.getFireBase().child( "usuarios/" + usuarioAuth.getUid() );
-            //gera a chave (push) e adiciona os valores do objeto usuário como JSON
-            reference.setValue( usuario );
-
-            Toast.makeText( CadastroUsuario.this, "Usuário cadastrado com sucesso!", Toast.LENGTH_LONG ).show();
-//            return true;
-
-        } catch ( Exception e ){
-            Toast.makeText( CadastroUsuario.this, "Erro ao gravar o usuário!", Toast.LENGTH_LONG ).show();
-            e.printStackTrace();
-//            return false;
-        }
-
-    }
-
-    private void alteraUsuario( Usuario usuario, FirebaseUser usuarioAuth ){
-        try{
-            //Usa a referencia do firebase para inserir nós em usuarios
-            reference = ConfiguracaoFireBase.getFireBase().child( "usuarios/" + usuarioAuth.getUid() );
-            //gera a chave (push) e adiciona os valores do objeto usuário como JSON
-            reference.setValue( usuario );
-            Toast.makeText( CadastroUsuario.this, "Usuário alterado com sucesso!", Toast.LENGTH_LONG ).show();
-
-        } catch ( Exception e ){
-            Toast.makeText( CadastroUsuario.this, "Erro ao alterar o usuário!", Toast.LENGTH_LONG ).show();
-            e.printStackTrace();
-        }
-    }
-
-    private void removeUsuario( FirebaseUser usuarioAuth ){
-        try{
-            reference = ConfiguracaoFireBase.getFireBase();
-            reference.child( "usuarios/" + usuarioAuth.getUid() ).setValue(null);
-            Toast.makeText( CadastroUsuario.this, "Usuário removido com sucesso!", Toast.LENGTH_LONG ).show();
-
-        } catch ( Exception e ){
-            Toast.makeText( CadastroUsuario.this, "Erro ao remover o usuário!", Toast.LENGTH_LONG ).show();
-            e.printStackTrace();
-        }
-    }
-
-    private void buscaUsuario(){
-
     }
 
 }

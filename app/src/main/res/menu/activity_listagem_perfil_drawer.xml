@@ -25,13 +25,13 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_edit"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="Editar Usuário" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_removeUser"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="Excluir Usuário" />
             <item
                 android:id="@+id/nav_logout"
                 android:title="Sair" />
