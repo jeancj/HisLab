@@ -55,11 +55,9 @@ public class UsuarioDAO {
         try{
             DatabaseReference reference = ConfiguracaoFireBase.getFireBase();
 
-            Log.d("DEBUGGGGGG", "Uid: " + email);
             reference.child("usuarios").orderByChild("dsEmail").equalTo( email ).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("DEBUGGGGGG", "111111111");
                     for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
 
                         usuarioBusca = postSnapshot.getValue( Usuario.class );

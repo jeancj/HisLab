@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CADASTRO DE USUÁRIO"
+        android:text="Cadastro de Usuário"
         android:textAlignment="center"
         android:textSize="25sp" />
 
@@ -23,28 +23,62 @@
         android:id="@+id/edtCadNome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="NOME"
+        android:hint="Nome"
         android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/edtCadEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="E-MAIL"
+        android:hint="E-mail"
         android:inputType="textEmailAddress" />
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" Sexo:"
+        android:textSize="20sp"/>
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/radio_masculino"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Masculino"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_feminino"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feminino"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/edtDtNascimento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:hint="Data de nascimento"
+        android:inputType="date"
+        android:paddingTop="8dp"
+        android:textColor="@color/colorPrimary" />
 
     <EditText
         android:id="@+id/edtCadSenha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="SENHA"
+        android:hint="Senha"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/edtCadConfirmaSenha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="CONFIRMAÇÃO SENHA"
+        android:hint="Confirmação senha"
         android:inputType="textPassword" />
 
     <Button

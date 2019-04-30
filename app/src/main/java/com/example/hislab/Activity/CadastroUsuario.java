@@ -1,13 +1,17 @@
 package com.example.hislab.Activity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.hislab.Classes.Usuario;
@@ -25,6 +29,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class CadastroUsuario extends AppCompatActivity {
 
     private EditText edtCadNome;
@@ -35,8 +42,15 @@ public class CadastroUsuario extends AppCompatActivity {
     private Button btnCancelarCadastro;
     private Usuario usuario;
     private FirebaseAuth autenticacao;
-    private FirebaseDatabase database;
-    private DatabaseReference reference;
+//    private FirebaseDatabase database;
+//    private DatabaseReference reference;
+    private String tpSexo;
+
+    EditText dtNascimento;
+    Calendar calendario = Calendar.getInstance();
+    private DatePickerDialog datePickerDialog;
+    String myFormat = "dd-MM-yyyy";
+    SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +63,16 @@ public class CadastroUsuario extends AppCompatActivity {
         edtCadConfirmaSenha = (EditText) findViewById( R.id.edtCadConfirmaSenha );
         btnSalvarCadastro = (Button) findViewById( R.id.btnSalvarCadastro );
         btnCancelarCadastro = (Button) findViewById( R.id.btnCancelarCadastro );
+        tpSexo = null;
+
+        dtNascimento.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                setDateTimeField();
+                // showDialog(DATE_DIALOG_ID);
+                return false;
+            }
+        });
 
         btnCancelarCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,14 +88,19 @@ public class CadastroUsuario extends AppCompatActivity {
                 if( !edtCadNome.getText().toString().equals( "" ) && !edtCadEmail.getText().toString().equals( "" ) ){
                     if( !edtCadSenha.getText().toString().equals( "" ) && !edtCadConfirmaSenha.getText().toString().equals( "" ) ){
                         if( edtCadSenha.getText().toString().equals( edtCadConfirmaSenha.getText().toString() ) ){
+                            if( tpSexo != null ){
 
-                            usuario = new Usuario();
-                            usuario.setDsNome( edtCadNome.getText().toString() );
-                            usuario.setDsEmail( edtCadEmail.getText().toString() );
-                            usuario.setDsSenha( edtCadSenha.getText().toString() );
+                                usuario = new Usuario();
+                                usuario.setDsNome( edtCadNome.getText().toString() );
+                                usuario.setDsEmail( edtCadEmail.getText().toString() );
+                                usuario.setDsSenha( edtCadSenha.getText().toString() );
+                                usuario.setTpSexo( tpSexo );
 
-                            cadastrarUsuario();
+                                cadastrarUsuario();
 
+                            } else {
+                                Toast.makeText( CadastroUsuario.this, "Sexo não informado!", Toast.LENGTH_SHORT ).show();
+                            }
                         } else {
                             Toast.makeText( CadastroUsuario.this, "Senha e confirmação estão diferentes!", Toast.LENGTH_SHORT ).show();
                         }
@@ -83,6 +112,19 @@ public class CadastroUsuario extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setDateTimeField() {
+        Calendar newCalendar = calendario;
+        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendario.set(year, monthOfYear, dayOfMonth, 0, 0);
+                dtNascimento.setText(sdf.format(calendario.getTime()));
+            }
+
+        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        dtNascimento.setText(sdf.format(calendario.getTime()));
     }
 
     private void cadastrarUsuario(){
@@ -127,5 +169,23 @@ public class CadastroUsuario extends AppCompatActivity {
             }
         });
     }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_masculino:
+                if (checked)
+                    tpSexo = "M";
+                    break;
+            case R.id.radio_feminino:
+                if (checked)
+                    tpSexo = "F";
+                    break;
+        }
+    }
+
 
 }

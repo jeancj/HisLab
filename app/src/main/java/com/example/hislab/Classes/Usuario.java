@@ -2,11 +2,15 @@ package com.example.hislab.Classes;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.Date;
+
 public class Usuario {
 
     private String dsEmail;
     private String dsSenha;
     private String dsNome;
+    private String tpSexo;
+    private Date dtNascimento;
 
     public String getDsEmail() {
         return dsEmail;
@@ -32,5 +36,21 @@ public class Usuario {
 
     public void setDsNome(String dsNome) {
         this.dsNome = dsNome;
+    }
+
+    public String getTpSexo() {
+        return tpSexo;
+    }
+
+    public void setTpSexo(String tpSexo) {
+        this.tpSexo = tpSexo;
+    }
+
+    public Date getDtNascimento() {
+        return dtNascimento;
+    }
+
+    public void setDtNascimento(Date dtNascimento) {
+        this.dtNascimento = dtNascimento;
     }
 }
