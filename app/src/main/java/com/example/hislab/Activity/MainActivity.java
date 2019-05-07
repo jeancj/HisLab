@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.hislab.Classes.Exame;
 import com.example.hislab.Classes.Usuario;
 import com.example.hislab.DAO.ConfiguracaoFireBase;
 import com.example.hislab.R;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         if( usuarioLogado() ){
 
             Intent intent = new Intent( MainActivity.this, ListagemPerfil.class );
+            intent.putExtra( "email", edtEmailLogin.getText().toString() );
+            intent.putExtra( "senha", edtSenhaLogin.getText().toString() );
             abrirNovaActivity( intent );
 
         } else {
@@ -59,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+//                    DatabaseReference reference = ConfiguracaoFireBase.getFireBase().child( "exames/1" );
+//                    Exame exame = new Exame();
+//                    exame.setDsExame( "Hemograma" );
+//                    exame.setNrIdadeInferior( 22 );
+//                    exame.setNrIdadeSuperior( 48 );
+//                    exame.setVlReferenciaInferior( 40 );
+//                    exame.setVlReferenciaSuperior( 70 );
+//                    exame.setDsMedida( "ml" );
+//                    exame.setTpSexo( "M" );
+//                    reference.setValue( exame );
 
                     if (!edtEmailLogin.getText().toString().equals("") && !edtSenhaLogin.getText().toString().equals("")) {
                         usuario = new Usuario();
@@ -93,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if( task.isSuccessful() ){
                     Intent intent = new Intent( MainActivity.this, ListagemPerfil.class );
+                    intent.putExtra( "email", edtEmailLogin.getText().toString() );
+                    intent.putExtra( "senha", edtSenhaLogin.getText().toString() );
                     startActivity( intent );
                     Toast.makeText( MainActivity.this, "Login efetuado com sucesso!", Toast.LENGTH_SHORT ).show();
                 } else {

@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.CadastroUsuario"></activity>
+        <activity android:name=".Activity.EditaUsuario"></activity>
+        <activity android:name=".Activity.CadastroUsuario" />
         <activity
             android:name=".Activity.ListagemPerfil"
             android:label="@string/title_activity_listagem_perfil"
@@ -27,7 +28,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
             android:value="true" />
-
     </application>
 
 </manifest>

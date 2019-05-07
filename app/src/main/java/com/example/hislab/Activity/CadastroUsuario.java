@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class CadastroUsuario extends AppCompatActivity {
 
@@ -42,15 +43,22 @@ public class CadastroUsuario extends AppCompatActivity {
     private Button btnCancelarCadastro;
     private Usuario usuario;
     private FirebaseAuth autenticacao;
-//    private FirebaseDatabase database;
-//    private DatabaseReference reference;
     private String tpSexo;
+    private EditText dtNascimento;
+    private Calendar calendario = Calendar.getInstance();
 
-    EditText dtNascimento;
-    Calendar calendario = Calendar.getInstance();
-    private DatePickerDialog datePickerDialog;
-    String myFormat = "dd-MM-yyyy";
-    SimpleDateFormat sdf = new SimpleDateFormat(myFormat);
+    DatePickerDialog.OnDateSetListener dataSelecionada = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            calendario.set(Calendar.YEAR, year);
+            calendario.set(Calendar.MONTH, monthOfYear);
+            calendario.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateLabel();
+        }
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +71,8 @@ public class CadastroUsuario extends AppCompatActivity {
         edtCadConfirmaSenha = (EditText) findViewById( R.id.edtCadConfirmaSenha );
         btnSalvarCadastro = (Button) findViewById( R.id.btnSalvarCadastro );
         btnCancelarCadastro = (Button) findViewById( R.id.btnCancelarCadastro );
+        dtNascimento = (EditText) findViewById( R.id.edtDtNascimento );
         tpSexo = null;
-
-        dtNascimento.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                setDateTimeField();
-                // showDialog(DATE_DIALOG_ID);
-                return false;
-            }
-        });
 
         btnCancelarCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +95,7 @@ public class CadastroUsuario extends AppCompatActivity {
                                 usuario.setDsEmail( edtCadEmail.getText().toString() );
                                 usuario.setDsSenha( edtCadSenha.getText().toString() );
                                 usuario.setTpSexo( tpSexo );
+                                usuario.setDtNascimento( dtNascimento.getText().toString() );
 
                                 cadastrarUsuario();
 
@@ -112,18 +113,23 @@ public class CadastroUsuario extends AppCompatActivity {
                 }
             }
         });
+
+        dtNascimento.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(CadastroUsuario.this, dataSelecionada,
+                        calendario.get(Calendar.YEAR),
+                        calendario.get(Calendar.MONTH),
+                        calendario.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
     }
 
-    private void setDateTimeField() {
-        Calendar newCalendar = calendario;
-        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                calendario.set(year, monthOfYear, dayOfMonth, 0, 0);
-                dtNascimento.setText(sdf.format(calendario.getTime()));
-            }
-
-        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+    private void updateLabel() {
+        String myFormat = "dd/MM/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
         dtNascimento.setText(sdf.format(calendario.getTime()));
     }
 

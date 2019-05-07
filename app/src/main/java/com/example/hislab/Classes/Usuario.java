@@ -10,7 +10,7 @@ public class Usuario {
     private String dsSenha;
     private String dsNome;
     private String tpSexo;
-    private Date dtNascimento;
+    private String dtNascimento;
 
     public String getDsEmail() {
         return dsEmail;
@@ -46,11 +46,11 @@ public class Usuario {
         this.tpSexo = tpSexo;
     }
 
-    public Date getDtNascimento() {
+    public String getDtNascimento() {
         return dtNascimento;
     }
 
-    public void setDtNascimento(Date dtNascimento) {
+    public void setDtNascimento(String dtNascimento) {
         this.dtNascimento = dtNascimento;
     }
 }
