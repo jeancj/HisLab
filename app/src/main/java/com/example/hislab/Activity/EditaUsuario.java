@@ -2,8 +2,10 @@ package com.example.hislab.Activity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -12,9 +14,14 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.hislab.Classes.Usuario;
+import com.example.hislab.DAO.ConfiguracaoFireBase;
 import com.example.hislab.DAO.UsuarioDAO;
 import com.example.hislab.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,15 +29,25 @@ import java.util.Locale;
 
 public class EditaUsuario extends AppCompatActivity {
 
+    private FirebaseAuth autenticacao;
+    private DatabaseReference reference;
+
     private EditText edtEditNome;
-    private EditText edtEditEmail;
     private Button btnEditarCadastro;
     private Button btnCancelarEdit;
-    private Usuario usuario;
-    private FirebaseAuth autenticacao;
     private String tpSexo;
-    private EditText dtNascimento;
+    private RadioButton edtRadioFeminino;
+    private RadioButton edtRadioMasculino;
+    private EditText edtDtNascimento;
+    private EditText edtEditSenha;
+    private EditText edtEditConfirmaSenha;
     private Calendar calendario = Calendar.getInstance();
+
+    private String txtOrigem = "";
+    private String txtNome = "";
+    private String txtSexo = "";
+    private String txtDataNascimento = "";
+    private String txtEmail = "";
 
     DatePickerDialog.OnDateSetListener dataSelecionada = new DatePickerDialog.OnDateSetListener() {
 
@@ -50,51 +67,79 @@ public class EditaUsuario extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edita_usuario);
 
+        autenticacao = ConfiguracaoFireBase.getFireBaseAuth();
+
         edtEditNome = (EditText) findViewById( R.id.edtEditNome );
-        edtEditEmail = (EditText) findViewById( R.id.edtEditEmail );
+        edtRadioMasculino = (RadioButton) findViewById( R.id.edtRadioMasculino );
+        edtRadioFeminino = (RadioButton) findViewById( R.id.edtRadioFeminino );
+        tpSexo = null;
+        edtDtNascimento = (EditText) findViewById( R.id.edtEditDtNascimento );
+        edtEditSenha = (EditText) findViewById( R.id.edtEditSenha );
+        edtEditConfirmaSenha = (EditText) findViewById( R.id.edtEditConfirmaSenha );
+
         btnEditarCadastro = (Button) findViewById( R.id.btnEditarCadastro );
         btnCancelarEdit = (Button) findViewById( R.id.btnCancelarEdit );
-        dtNascimento = (EditText) findViewById( R.id.edtEditDtNascimento );
-        tpSexo = null;
 
-        Usuario dadosUsuario = UsuarioDAO.buscaUsuario( autenticacao.getCurrentUser().getEmail() );
-        edtEditEmail.setText( dadosUsuario.getDsEmail() );
-        edtEditNome.setText( dadosUsuario.getDsNome() );
-        dtNascimento.setText( dadosUsuario.getDtNascimento() );
-        tpSexo = dadosUsuario.getTpSexo();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+        txtOrigem = bundle.getString("origem");
+        if( txtOrigem.equals("editarUsuario") ){
+            txtNome = bundle.getString("nome");
+            txtEmail = bundle.getString("email");
+            txtSexo = bundle.getString("sexo");
+            txtDataNascimento = bundle.getString("dataNascimento");
+
+            edtEditNome.setText( txtNome );
+            edtDtNascimento.setText( txtDataNascimento );
+
+            if( txtSexo.equals("M") ){
+                edtRadioMasculino.setChecked(true);
+            } else if( txtSexo.equals("F") ){
+                edtRadioFeminino.setChecked(true);
+            }
+
+        }
 
         btnCancelarEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent( EditaUsuario.this, ListagemPerfil.class );
                 startActivity( intent );
+                finish();
             }
         });
 
         btnEditarCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( !edtEditNome.getText().toString().equals( "" ) && !edtEditEmail.getText().toString().equals( "" ) ){
-                    if( tpSexo != null ){
 
-                        usuario = new Usuario();
-                        usuario.setDsNome( edtEditNome.getText().toString() );
-                        usuario.setDsEmail( edtEditEmail.getText().toString() );
-                        usuario.setTpSexo( tpSexo );
-                        usuario.setDtNascimento( dtNascimento.getText().toString() );
+                if( edtEditSenha.getText().toString().equals( edtEditConfirmaSenha.getText().toString() ) ){
 
-                        editarUsuario();
+                    Usuario usuario = new Usuario();
+                    usuario.setDsNome( edtEditNome.getText().toString() );
+                    usuario.setDtNascimento( edtDtNascimento.getText().toString() );
+                    usuario.setDsSenha( edtEditSenha.getText().toString() );
 
-                    } else {
-                        Toast.makeText( EditaUsuario.this, "Sexo não informado!", Toast.LENGTH_SHORT ).show();
+                    if( edtRadioMasculino.isChecked() ){
+                        usuario.setTpSexo("M");
+                    } else if( edtRadioFeminino.isChecked() ) {
+                        usuario.setTpSexo("F");
                     }
+
+                    //chave por isso não é atualizado
+                    usuario.setDsEmail( txtEmail );
+
+                    atualizaDados( usuario );
+
                 } else {
-                    Toast.makeText( EditaUsuario.this, "Preencha os campos de E-mail e nome!", Toast.LENGTH_SHORT ).show();
+                    Toast.makeText(EditaUsuario.this, "As senhas não conferem", Toast.LENGTH_LONG ).show();
                 }
+
             }
         });
 
-        dtNascimento.setOnClickListener(new View.OnClickListener() {
+        edtDtNascimento.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -107,14 +152,10 @@ public class EditaUsuario extends AppCompatActivity {
 
     }
 
-    public void editarUsuario(){
-        UsuarioDAO.alteraUsuario( usuario, autenticacao.getCurrentUser() );
-    }
-
     private void updateLabel() {
         String myFormat = "dd/MM/yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
-        dtNascimento.setText(sdf.format(calendario.getTime()));
+        edtDtNascimento.setText(sdf.format(calendario.getTime()));
     }
 
     public void onRadioButtonClicked(View view) {
@@ -132,6 +173,52 @@ public class EditaUsuario extends AppCompatActivity {
                     tpSexo = "F";
                 break;
         }
+    }
+
+    private boolean atualizaDados( final Usuario usuario ){
+
+        btnEditarCadastro.setEnabled(false);
+
+        try{
+
+//            reference = ConfiguracaoFireBase.getFireBase().child("usuarios");
+            atualizarSenha( usuario.getDsSenha() );
+            UsuarioDAO.alteraUsuario(usuario, FirebaseAuth.getInstance().getCurrentUser());
+
+            Toast.makeText(EditaUsuario.this, "Dados Alterados com sucesso!", Toast.LENGTH_LONG ).show();
+            abrirTelaPrincipal();
+            finish();
+
+        } catch ( Exception e ){
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    private void atualizarSenha( String senhaNova ){
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.updatePassword( senhaNova ).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if( task.isSuccessful() ){
+                    Log.d( "NOVA_SENHA_ATUALIZADA", "Senha atualizada com sucesso!" );
+                }
+
+            }
+        });
+
+    }
+
+    private void abrirTelaPrincipal(){
+
+        Intent intent = new Intent( EditaUsuario.this, ListagemPerfil.class );
+        startActivity(intent);
+        finish();
+
     }
 
 }

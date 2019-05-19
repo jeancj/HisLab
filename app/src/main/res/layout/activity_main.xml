@@ -39,15 +39,15 @@
         android:layout_height="wrap_content"
         android:text="LOGIN" />
 
-    <Button
-        android:id="@+id/btnCadastrar"
+    <TextView
+        android:id="@+id/txtCadastrar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CADASTRAR"
+        android:text="Cadastre-se"
         android:textAlignment="center"
-        android:textSize="13sp"
+        android:textSize="13dp"
         android:clickable="true"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/design_default_color_primary"
         />
 
 </LinearLayout>

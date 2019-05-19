@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hislab.Classes.Exame;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtEmailLogin;
     private EditText edtSenhaLogin;
     private Button btnLogin;
-    private Button btnCadastrar;
+    private TextView txtCadastrar;
     private Usuario usuario;
 
     @Override
@@ -38,16 +39,17 @@ public class MainActivity extends AppCompatActivity {
         edtEmailLogin = (EditText) findViewById( R.id.edtEmail );
         edtSenhaLogin = (EditText) findViewById( R.id.edtSenha );
         btnLogin = (Button) findViewById( R.id.btnLogin );
-        btnCadastrar = (Button) findViewById( R.id.btnCadastrar );
+        txtCadastrar = (TextView) findViewById( R.id.txtCadastrar );
 
         edtEmailLogin.setText("");
         edtSenhaLogin.setText("");
 
-        btnCadastrar.setOnClickListener( new View.OnClickListener() {
+        txtCadastrar.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent( MainActivity.this, CadastroUsuario.class );
                 abrirNovaActivity( intent );
+                finish();
             }
         });
 
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent( MainActivity.this, ListagemPerfil.class );
             intent.putExtra( "email", edtEmailLogin.getText().toString() );
             intent.putExtra( "senha", edtSenhaLogin.getText().toString() );
+            finish();
             abrirNovaActivity( intent );
 
         } else {
@@ -63,17 +66,6 @@ public class MainActivity extends AppCompatActivity {
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-//                    DatabaseReference reference = ConfiguracaoFireBase.getFireBase().child( "exames/1" );
-//                    Exame exame = new Exame();
-//                    exame.setDsExame( "Hemograma" );
-//                    exame.setNrIdadeInferior( 22 );
-//                    exame.setNrIdadeSuperior( 48 );
-//                    exame.setVlReferenciaInferior( 40 );
-//                    exame.setVlReferenciaSuperior( 70 );
-//                    exame.setDsMedida( "ml" );
-//                    exame.setTpSexo( "M" );
-//                    reference.setValue( exame );
 
                     if (!edtEmailLogin.getText().toString().equals("") && !edtSenhaLogin.getText().toString().equals("")) {
                         usuario = new Usuario();
@@ -110,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent( MainActivity.this, ListagemPerfil.class );
                     intent.putExtra( "email", edtEmailLogin.getText().toString() );
                     intent.putExtra( "senha", edtSenhaLogin.getText().toString() );
+                    finish();
                     startActivity( intent );
                     Toast.makeText( MainActivity.this, "Login efetuado com sucesso!", Toast.LENGTH_SHORT ).show();
                 } else {

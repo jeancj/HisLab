@@ -26,13 +26,6 @@
         android:hint="Nome"
         android:inputType="textEmailAddress" />
 
-    <EditText
-        android:id="@+id/edtEditEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="E-mail"
-        android:inputType="textEmailAddress" />
-
     <TextView
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
@@ -44,12 +37,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <RadioButton android:id="@+id/radio_masculino"
+        <RadioButton android:id="@+id/edtRadioMasculino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Masculino"
             android:onClick="onRadioButtonClicked"/>
-        <RadioButton android:id="@+id/radio_feminino"
+        <RadioButton android:id="@+id/edtRadioFeminino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Feminino"
@@ -66,6 +59,20 @@
         android:inputType="date"
         android:paddingTop="8dp"
         android:textColor="@color/colorPrimary" />
+
+    <EditText
+        android:id="@+id/edtEditSenha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nova senha"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/edtEditConfirmaSenha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Confirmação nova senha"
+        android:inputType="textPassword" />
 
     <Button
         android:id="@+id/btnEditarCadastro"
