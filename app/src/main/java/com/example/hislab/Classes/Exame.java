@@ -3,12 +3,13 @@ package com.example.hislab.Classes;
 public class Exame {
 
     private String dsExame;
-    private Integer vlReferenciaSuperior;
-    private Integer vlReferenciaInferior;
-    private Integer nrIdadeSuperior;
-    private Integer nrIdadeInferior;
-    private String tpSexo;
     private String dsMedida;
+    private String idExame;
+    private Integer nrIdadeInferior;
+    private Integer nrIdadeSuperior;
+    private String tpSexo;
+    private Double vlReferenciaInferior;
+    private Double vlReferenciaSuperior;
 
     public String getDsExame() {
         return dsExame;
@@ -18,28 +19,20 @@ public class Exame {
         this.dsExame = dsExame;
     }
 
-    public Integer getVlReferenciaSuperior() {
-        return vlReferenciaSuperior;
+    public String getDsMedida() {
+        return dsMedida;
     }
 
-    public void setVlReferenciaSuperior(Integer vlReferenciaSuperior) {
-        this.vlReferenciaSuperior = vlReferenciaSuperior;
+    public void setDsMedida(String dsMedida) {
+        this.dsMedida = dsMedida;
     }
 
-    public Integer getVlReferenciaInferior() {
-        return vlReferenciaInferior;
+    public String getIdExame() {
+        return idExame;
     }
 
-    public void setVlReferenciaInferior(Integer vlReferenciaInferior) {
-        this.vlReferenciaInferior = vlReferenciaInferior;
-    }
-
-    public Integer getNrIdadeSuperior() {
-        return nrIdadeSuperior;
-    }
-
-    public void setNrIdadeSuperior(Integer nrIdadeSuperior) {
-        this.nrIdadeSuperior = nrIdadeSuperior;
+    public void setIdExame(String idExame) {
+        this.idExame = idExame;
     }
 
     public Integer getNrIdadeInferior() {
@@ -50,6 +43,14 @@ public class Exame {
         this.nrIdadeInferior = nrIdadeInferior;
     }
 
+    public Integer getNrIdadeSuperior() {
+        return nrIdadeSuperior;
+    }
+
+    public void setNrIdadeSuperior(Integer nrIdadeSuperior) {
+        this.nrIdadeSuperior = nrIdadeSuperior;
+    }
+
     public String getTpSexo() {
         return tpSexo;
     }
@@ -58,11 +59,19 @@ public class Exame {
         this.tpSexo = tpSexo;
     }
 
-    public String getDsMedida() {
-        return dsMedida;
+    public Double getVlReferenciaInferior() {
+        return vlReferenciaInferior;
     }
 
-    public void setDsMedida(String dsMedida) {
-        this.dsMedida = dsMedida;
+    public void setVlReferenciaInferior(Double vlReferenciaInferior) {
+        this.vlReferenciaInferior = vlReferenciaInferior;
+    }
+
+    public Double getVlReferenciaSuperior() {
+        return vlReferenciaSuperior;
+    }
+
+    public void setVlReferenciaSuperior(Double vlReferenciaSuperior) {
+        this.vlReferenciaSuperior = vlReferenciaSuperior;
     }
 }

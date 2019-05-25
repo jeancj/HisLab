@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearlayoutCadHis"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="16dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".Activity.CadastroHistorico">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Histórico de Exames"
+        android:textAlignment="center"
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/edtDtExame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:hint="Data do exame"
+        android:inputType="date"
+        android:focusable="false"
+        android:paddingTop="8dp"
+        android:textColor="@color/colorPrimary" />
+
+    <EditText
+        android:id="@+id/edtVlExame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor do Exame"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/edtVlRefInf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor de referência Inferior"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/edtVlRefSup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor de referência Superior"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/btnSalvarHistorico"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SALVAR" />
+
+    <Button
+        android:id="@+id/btnVoltarHistorico"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="VOLTAR" />
+
+</LinearLayout>

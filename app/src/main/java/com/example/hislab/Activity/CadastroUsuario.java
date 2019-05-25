@@ -128,9 +128,9 @@ public class CadastroUsuario extends AppCompatActivity {
     }
 
     private void updateLabel() {
-        String myFormat = "dd/MM/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
-        dtNascimento.setText(sdf.format(calendario.getTime()));
+            String myFormat = "dd/MM/yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
+            dtNascimento.setText(sdf.format(calendario.getTime()));
     }
 
     private void cadastrarUsuario(){

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.hislab.Classes.Exame;
 import com.example.hislab.Classes.Usuario;
 import com.example.hislab.DAO.ConfiguracaoFireBase;
+import com.example.hislab.Helper.Preferencias;
 import com.example.hislab.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -56,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
         if( usuarioLogado() ){
 
             Intent intent = new Intent( MainActivity.this, ListagemPerfil.class );
-            intent.putExtra( "email", edtEmailLogin.getText().toString() );
-            intent.putExtra( "senha", edtSenhaLogin.getText().toString() );
             finish();
             abrirNovaActivity( intent );
 
@@ -100,10 +99,12 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if( task.isSuccessful() ){
                     Intent intent = new Intent( MainActivity.this, ListagemPerfil.class );
-                    intent.putExtra( "email", edtEmailLogin.getText().toString() );
-                    intent.putExtra( "senha", edtSenhaLogin.getText().toString() );
                     finish();
                     startActivity( intent );
+
+                    Preferencias preferencias = new Preferencias( MainActivity.this );
+                    preferencias.salvarUsuarioPreferencias( usuario.getDsEmail(), usuario.getDsSenha() );
+
                     Toast.makeText( MainActivity.this, "Login efetuado com sucesso!", Toast.LENGTH_SHORT ).show();
                 } else {
                     Toast.makeText( MainActivity.this, "Usuário ou senha inválidos! Tente novamente!", Toast.LENGTH_SHORT ).show();

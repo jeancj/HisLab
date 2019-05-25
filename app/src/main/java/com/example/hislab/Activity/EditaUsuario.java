@@ -182,12 +182,17 @@ public class EditaUsuario extends AppCompatActivity {
         try{
 
 //            reference = ConfiguracaoFireBase.getFireBase().child("usuarios");
-            atualizarSenha( usuario.getDsSenha() );
+            if( !usuario.getDsSenha().trim().equals( "" ) ){
+                atualizarSenha(usuario.getDsSenha());
+            }
             UsuarioDAO.alteraUsuario(usuario, FirebaseAuth.getInstance().getCurrentUser());
 
             Toast.makeText(EditaUsuario.this, "Dados Alterados com sucesso!", Toast.LENGTH_LONG ).show();
-            abrirTelaPrincipal();
+            Intent intent = new Intent( EditaUsuario.this, ListagemPerfil.class );
+            startActivity(intent);
             finish();
+//            abrirTelaPrincipal();
+//            finish();
 
         } catch ( Exception e ){
             e.printStackTrace();
@@ -215,9 +220,7 @@ public class EditaUsuario extends AppCompatActivity {
 
     private void abrirTelaPrincipal(){
 
-        Intent intent = new Intent( EditaUsuario.this, ListagemPerfil.class );
-        startActivity(intent);
-        finish();
+
 
     }
 

@@ -1,10 +1,12 @@
 package com.example.hislab.Activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -15,11 +17,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.hislab.Classes.Exame;
+import com.example.hislab.Classes.Historico;
+import com.example.hislab.Classes.LinhaHistorico;
 import com.example.hislab.Classes.Usuario;
 import com.example.hislab.DAO.ConfiguracaoFireBase;
+import com.example.hislab.DAO.HistoricoDAO;
 import com.example.hislab.DAO.UsuarioDAO;
+import com.example.hislab.Helper.Preferencias;
 import com.example.hislab.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,12 +43,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class ListagemPerfil extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private FirebaseAuth autenticacao;
     DatabaseReference reference;
     private String email;
     private String senha;
+    private Button btnVisualizarGrafico;
+    private Button btnListagemHistorico;
 
     private String txtOrigem = "";
     private String txtNome = "";
@@ -50,20 +65,31 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
         autenticacao = FirebaseAuth.getInstance();
         reference = ConfiguracaoFireBase.getFireBase();
 
-        email = getIntent().getExtras().getString("email");
-        senha = getIntent().getExtras().getString("senha");
+        Preferencias preferencias = new Preferencias( ListagemPerfil.this );
+        email = preferencias.getEmailUsuarioLogado();
+        senha = preferencias.getSenhaUsuarioLogado();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listagem_perfil);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        btnVisualizarGrafico = (Button) findViewById( R.id.btnVisualizarGrafico );
+        btnListagemHistorico = (Button) findViewById( R.id.btnListagemHistorico );
+
+        btnVisualizarGrafico.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                Toast.makeText( ListagemPerfil.this, "Visualizar Gráfico", Toast.LENGTH_LONG ).show();
+            }
+        });
+
+        btnListagemHistorico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent( ListagemPerfil.this, ListagemHistorico.class );
+                startActivity( intent );
+                finish();
             }
         });
 
@@ -138,12 +164,10 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
         reference.child("usuarios").orderByChild("dsEmail").equalTo( emailUsuarioLogado ).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("DEBUGGGGGG", "1111111");
-                for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
-                    Log.d("DEBUGGGGGG", "2222222");
-                    Usuario dadosUsuario = postSnapshot.getValue( Usuario.class );
-                    Log.d("DEBUGGGGGG", "post: " + dadosUsuario.getDsEmail());
 
+                for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
+
+                    Usuario dadosUsuario = postSnapshot.getValue( Usuario.class );
                     final Intent intent = new Intent( ListagemPerfil.this, EditaUsuario.class );
                     final Bundle bundle = new Bundle();
 
@@ -170,30 +194,65 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
 
     private void removerUsuario() {
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        AuthCredential credential = EmailAuthProvider.getCredential(email, senha);
-
-        UsuarioDAO.removeUsuario( autenticacao.getCurrentUser() );
-        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+        AlertDialog.Builder msgConfirmacao = new AlertDialog.Builder( this );
+        msgConfirmacao.setTitle( "Excluindo..." );
+        msgConfirmacao.setMessage( "Tem certeza que deseja excluir este usuário, todo o histórico será perdido?" );
+        msgConfirmacao.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                AuthCredential credential = EmailAuthProvider.getCredential(email, senha);
+
+                UsuarioDAO.removeUsuario( autenticacao.getCurrentUser() );
+
+                String emailUsuarioLogado = autenticacao.getCurrentUser().getEmail();
+
+                //buscando historico para excluir
+                reference.child("historico").orderByChild("dsEmail").equalTo( emailUsuarioLogado ).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("MSG", "Conta deletada");
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
+                            Historico historico = postSnapshot.getValue( Historico.class );
+                            HistoricoDAO.removeHistorico( historico.getIdHistorico() );
                         }
                     }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
                 });
+
+
+                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d("MSG", "Conta deletada");
+                                }
+                            }
+                        });
+                    }
+                });
+
+                autenticacao.signOut();
+
+                Intent intent = new Intent( ListagemPerfil.this, MainActivity.class );
+                startActivity( intent );
+                finish();
+
             }
         });
+        msgConfirmacao.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-//        autenticacao.getCurrentUser().delete();
-        autenticacao.signOut();
-
-        Intent intent = new Intent( ListagemPerfil.this, MainActivity.class );
-        startActivity( intent );
-        finish();
+            }
+        });
+        msgConfirmacao.show();
 
     }
 
