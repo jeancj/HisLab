@@ -39,7 +39,7 @@ public class CadastroHistorico extends AppCompatActivity {
     private Button btnSalvarHistorico;
     private Button btnVoltarHistorico;
     private FirebaseAuth autenticacao;
-    DatabaseReference reference;
+    private DatabaseReference reference;
     private EditText dtExame;
     private Spinner spExameHistorico;
     private Calendar calendario = Calendar.getInstance();
@@ -112,7 +112,7 @@ public class CadastroHistorico extends AppCompatActivity {
                     public void onNothingSelected(AdapterView<?> parent) {}
                 });
 
-                LinearLayout ll = (LinearLayout) findViewById( R.id.linearlayoutCadHis );
+                LinearLayout ll = (LinearLayout) findViewById( R.id.linearlayoutGrafico );
                 ll.addView( spExameHistorico, 1 );
 
             }

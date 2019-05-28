@@ -39,6 +39,7 @@ public class ExameAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         TextView tv = new TextView(context);
+        tv.setTextSize(20);
         tv.setText(lista.get(position));
 
         return tv;

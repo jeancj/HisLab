@@ -80,7 +80,9 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
         btnVisualizarGrafico.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText( ListagemPerfil.this, "Visualizar Gráfico", Toast.LENGTH_LONG ).show();
+                Intent intent = new Intent( ListagemPerfil.this, VisualizaGrafico.class );
+                startActivity( intent );
+                finish();
             }
         });
 

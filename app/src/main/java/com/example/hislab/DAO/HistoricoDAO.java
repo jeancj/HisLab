@@ -29,6 +29,16 @@ public class HistoricoDAO {
 
     }
 
+    public static void alteraUsuario( Historico historico, FirebaseUser usuarioAuth ){
+        try{
+            DatabaseReference reference = ConfiguracaoFireBase.getFireBase().child( "historico/" + historico.getIdHistorico() );
+            reference.setValue( historico );
+
+        } catch ( Exception e ){
+            e.printStackTrace();
+        }
+    }
+
     public static void removeHistorico( String idHistorico ){
         try{
             DatabaseReference reference = ConfiguracaoFireBase.getFireBase();
