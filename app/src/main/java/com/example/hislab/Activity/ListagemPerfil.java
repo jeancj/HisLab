@@ -82,7 +82,7 @@ public class ListagemPerfil extends AppCompatActivity implements NavigationView.
             public void onClick(View v) {
                 Intent intent = new Intent( ListagemPerfil.this, VisualizaGrafico.class );
                 startActivity( intent );
-                finish();
+//                finish();
             }
         });
 

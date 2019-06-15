@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.hislab.Classes.Exame;
+import com.example.hislab.Classes.Historico;
 import com.example.hislab.DAO.ConfiguracaoFireBase;
 import com.example.hislab.R;
 import com.github.mikephil.charting.charts.LineChart;
@@ -69,68 +71,104 @@ public class VisualizaGrafico extends AppCompatActivity {
                 spExameGrafico.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                        idExameSelecionado = parent.getSelectedItemId();
 
-//                        String strURL = "https://chart.googleapis.com/chart?" +
-//                        "cht=lc&" + //define o tipo do gráfico "linha"
-//                                "chxt=x,y&" + //imprime os valores dos eixos X, Y
-//                                "chs=300x300&" + //define o tamanho da imagem
-//                                "chd=t:10,45,5,10,13,26&" + //valor de cada coluna do gráfico
-//                                "chl=Jan|Fev|Mar|Abr|Mai|Jun&" + //rótulo para cada coluna
-//                                "chdl=Vendas&" + //legenda do gráfico
-//                                "chxr=1,0,50&" + //define o valor de início e fim do eixo
-//                                "chds=0,50&" + //define o valor de escala dos dados
-//                                "chg=0,5,0,0&" + //desenha linha horizontal na grade
-//                                "chco=3D7930&" + //cor da linha do gráfico
-//                                "chtt=Vendas+x+1000&" + //cabeçalho do gráfico
-//                                "chm=B,0,0,0"; //fundo verde
-//
-//                        WebView wvGrafico = (WebView)findViewById(R.id.webViewGrafico);
-//                        wvGrafico.loadUrl(strURL);
+                        //TODO repetir os dados alimentando o grafico
 
-                        grafico = (LineChart) findViewById(R.id.graficoLinha);
+                        final Long idExameSelecionado = parent.getSelectedItemId();
+                        String emailUsuarioLogado = autenticacao.getCurrentUser().getEmail();
 
-//                        grafico.setOnChartGestureListener(VisualizaGrafico.this);
-//                        grafico.setOnChartValueSelectedListener(VisualizaGrafico.this);
-                        grafico.setDragEnabled(true);
-                        grafico.setScaleEnabled(false);
-
-                        ArrayList<Entry> valorY = new ArrayList<>();
-                        valorY.add( new Entry(0, 60f ) );
-                        valorY.add( new Entry(1, 89.5f ) );
-                        valorY.add( new Entry(2, 42.1f ) );
-                        valorY.add( new Entry(3, 50f ) );
-//                        valorY.add( new Entry(4, 23.8f ) );
-
-                        final ArrayList<String> xAxis = new ArrayList<>();
-                        xAxis.add("01/2019");
-                        xAxis.add("02/2019");
-                        xAxis.add("03/2019");
-                        xAxis.add("04/2019");
-                        xAxis.add("05/2019");
-                        xAxis.add("06/2019");
-                        xAxis.add("07/2019");
-                        xAxis.add("08/2019");
-
-                        LineDataSet set1 = new LineDataSet( valorY, "Resultado" );
-                        set1.setFillAlpha(110);
-                        set1.setColor(Color.GREEN);
-                        set1.setLineWidth(3f);
-                        set1.setValueTextSize(10f);
-
-                        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-                        dataSets.add( set1 );
-
-                        LineData data = new LineData( dataSets );
-                        grafico.setData(data);
-
-                        XAxis x = grafico.getXAxis();
-                        x.setValueFormatter(new IAxisValueFormatter() {
+                        reference.child("historico")
+                                .orderByChild("dsEmail").equalTo(emailUsuarioLogado)
+//                                .orde("dsEmail").equalTo(emailUsuarioLogado)
+//                                .orderByChild("idExame").equalTo(idExameSelecionado)
+                                .addValueEventListener(new ValueEventListener() {
                             @Override
-                            public String getFormattedValue(float value, AxisBase axis) {
-                                return xAxis.get( (int) value );
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                grafico = (LineChart) findViewById(R.id.graficoLinha);
+                                grafico.setDragEnabled(true);
+                                grafico.setScaleEnabled(false);
+
+                                final ArrayList<String> legendaX = new ArrayList<>();
+                                final ArrayList<Entry> vlResultados = new ArrayList<>();
+                                final ArrayList<Entry> vlLimiteSup = new ArrayList<>();
+                                final ArrayList<Entry> vlLimiteInf = new ArrayList<>();
+
+                                int index = 0;
+
+                                for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
+                                    Historico dadosHistorico = postSnapshot.getValue( Historico.class );
+
+                                    if( dadosHistorico.getIdExame().equals( idExameSelecionado + "" ) ) {
+
+                                        Log.d("GRAFF", "##################");
+                                        Log.d("GRAFF", "" + dadosHistorico.getIdExame());
+                                        Log.d("GRAFF", "" + dadosHistorico.getDtExame());
+                                        Log.d("GRAFF", "" + dadosHistorico.getVlExame());
+                                        Log.d("GRAFF", "" + dadosHistorico.getVlReferenciaInferior());
+                                        Log.d("GRAFF", "" + dadosHistorico.getVlReferenciaSuperior());
+
+                                        vlResultados.add( new Entry(index, dadosHistorico.getVlExame().floatValue() ) );
+
+                                        if( dadosHistorico.getVlReferenciaSuperior() != null ) {
+                                            vlLimiteSup.add(new Entry(index, dadosHistorico.getVlReferenciaSuperior().floatValue()));
+                                        }
+                                        if( dadosHistorico.getVlReferenciaSuperior() != null ) {
+                                            vlLimiteInf.add( new Entry(index, dadosHistorico.getVlReferenciaInferior().floatValue() ) );
+                                        }
+
+                                        legendaX.add( dadosHistorico.getDtExame() );
+                                        index++;
+                                    }
+
+                                }
+
+                                LineDataSet resultados = new LineDataSet( vlResultados, "Resultado" );
+                                LineDataSet limiteSuperior = new LineDataSet( vlLimiteSup, "Limite Sup." );
+                                LineDataSet limiteInferior = new LineDataSet( vlLimiteInf, "Limite Inf." );
+
+                                resultados.setFillAlpha(110);
+                                resultados.setColor(Color.GREEN);
+                                resultados.setLineWidth(7f);
+                                resultados.setValueTextSize(15f);
+
+                                limiteSuperior.setFillAlpha(110);
+                                limiteSuperior.setColor(Color.RED);
+                                limiteSuperior.setLineWidth(5f);
+                                limiteSuperior.setValueTextSize(12f);
+
+                                limiteInferior.setFillAlpha(110);
+                                limiteInferior.setColor(Color.RED);
+                                limiteInferior.setLineWidth(5f);
+                                limiteInferior.setValueTextSize(12f);
+
+                                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                                dataSets.add( resultados );
+                                dataSets.add( limiteSuperior );
+                                dataSets.add( limiteInferior );
+
+                                LineData data = new LineData( dataSets );
+                                data.setValueTextSize(12f);
+                                grafico.setData(data);
+
+                                XAxis x = grafico.getXAxis();
+                                x.setEnabled(true);
+                                x.setSpaceMax(vlResultados.size());
+                                x.setSpaceMin(vlResultados.size());
+                                x.setValueFormatter(new IAxisValueFormatter() {
+                                    @Override
+                                    public String getFormattedValue(float value, AxisBase axis) {
+                                        return legendaX.get( (int) value );
+                                    }
+                                });
+
                             }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {}
                         });
+
+                        //TODO fim
 
                         Toast.makeText( VisualizaGrafico.this, "Selecionei " + parent.getSelectedItem() + ", vou gerar o gráfico", Toast.LENGTH_LONG ).show();
                     }

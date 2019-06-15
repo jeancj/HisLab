@@ -36,7 +36,7 @@
         android:id="@+id/edtVlExame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Valor do Exame"
+        android:hint="Resultado do Exame"
         android:ems="10"
         android:inputType="numberDecimal" />
 
