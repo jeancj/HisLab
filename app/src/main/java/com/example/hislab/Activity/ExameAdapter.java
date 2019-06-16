@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.hislab.Classes.Exame;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -13,9 +15,10 @@ import java.util.ArrayList;
 public class ExameAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<String> lista;
+    private ArrayList<Exame> lista;
 
-    public ExameAdapter( Context context, ArrayList<String> lista ){
+//    public ExameAdapter( Context context, ArrayList<String> lista ){
+    public ExameAdapter( Context context, ArrayList<Exame> lista ){
         this.context = context;
         this.lista = lista;
     }
@@ -40,7 +43,7 @@ public class ExameAdapter extends BaseAdapter {
 
         TextView tv = new TextView(context);
         tv.setTextSize(20);
-        tv.setText(lista.get(position));
+        tv.setText(lista.get(position).getDsExame());
 
         return tv;
     }

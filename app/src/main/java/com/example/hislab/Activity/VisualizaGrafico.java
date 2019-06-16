@@ -1,5 +1,6 @@
 package com.example.hislab.Activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class VisualizaGrafico extends AppCompatActivity {
 
@@ -55,11 +58,16 @@ public class VisualizaGrafico extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                ArrayList<String> arrayExames = new ArrayList<String>();
+                final ArrayList<Exame> arrayExames = new ArrayList<Exame>();
+
+                Exame e = new Exame();
+                e.setIdExame("99999");
+                e.setDsExame("Selecionar");
+                arrayExames.add(e);
 
                 for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
                     Exame dadosExame = postSnapshot.getValue( Exame.class );
-                    arrayExames.add( dadosExame.getDsExame() );
+                    arrayExames.add( dadosExame );
                 }
 
                 spExameGrafico = new Spinner( VisualizaGrafico.this );
@@ -72,15 +80,11 @@ public class VisualizaGrafico extends AppCompatActivity {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                        //TODO repetir os dados alimentando o grafico
-
-                        final Long idExameSelecionado = parent.getSelectedItemId();
-                        String emailUsuarioLogado = autenticacao.getCurrentUser().getEmail();
+                        final Exame exameSelecionado = (Exame) parent.getSelectedItem();
+                        final String emailUsuarioLogado = autenticacao.getCurrentUser().getEmail();
 
                         reference.child("historico")
                                 .orderByChild("dsEmail").equalTo(emailUsuarioLogado)
-//                                .orde("dsEmail").equalTo(emailUsuarioLogado)
-//                                .orderByChild("idExame").equalTo(idExameSelecionado)
                                 .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -90,31 +94,36 @@ public class VisualizaGrafico extends AppCompatActivity {
                                 grafico.setScaleEnabled(false);
 
                                 final ArrayList<String> legendaX = new ArrayList<>();
-                                final ArrayList<Entry> vlResultados = new ArrayList<>();
-                                final ArrayList<Entry> vlLimiteSup = new ArrayList<>();
-                                final ArrayList<Entry> vlLimiteInf = new ArrayList<>();
+                                ArrayList<Entry> vlResultados = new ArrayList<>();
+                                ArrayList<Entry> vlLimiteSup = new ArrayList<>();
+                                ArrayList<Entry> vlLimiteInf = new ArrayList<>();
 
+                                legendaX.clear();
+                                vlResultados.clear();
+                                vlLimiteSup.clear();
+                                vlLimiteInf.clear();
                                 int index = 0;
 
                                 for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
                                     Historico dadosHistorico = postSnapshot.getValue( Historico.class );
 
-                                    if( dadosHistorico.getIdExame().equals( idExameSelecionado + "" ) ) {
-
-                                        Log.d("GRAFF", "##################");
-                                        Log.d("GRAFF", "" + dadosHistorico.getIdExame());
-                                        Log.d("GRAFF", "" + dadosHistorico.getDtExame());
-                                        Log.d("GRAFF", "" + dadosHistorico.getVlExame());
-                                        Log.d("GRAFF", "" + dadosHistorico.getVlReferenciaInferior());
-                                        Log.d("GRAFF", "" + dadosHistorico.getVlReferenciaSuperior());
+                                    if( dadosHistorico.getIdExame().equals( exameSelecionado.getIdExame() ) ) {
 
                                         vlResultados.add( new Entry(index, dadosHistorico.getVlExame().floatValue() ) );
 
                                         if( dadosHistorico.getVlReferenciaSuperior() != null ) {
                                             vlLimiteSup.add(new Entry(index, dadosHistorico.getVlReferenciaSuperior().floatValue()));
+                                        } else {
+                                            if( exameSelecionado.getVlReferenciaSuperior() != null ) {
+                                                vlLimiteSup.add(new Entry(index, exameSelecionado.getVlReferenciaSuperior().floatValue()));
+                                            }
                                         }
                                         if( dadosHistorico.getVlReferenciaSuperior() != null ) {
-                                            vlLimiteInf.add( new Entry(index, dadosHistorico.getVlReferenciaInferior().floatValue() ) );
+                                            vlLimiteInf.add( new Entry(index, dadosHistorico.getVlReferenciaInferior().floatValue()));
+                                        } else {
+                                            if( exameSelecionado.getVlReferenciaInferior() != null ) {
+                                                vlLimiteInf.add(new Entry(index, exameSelecionado.getVlReferenciaInferior().floatValue()));
+                                            }
                                         }
 
                                         legendaX.add( dadosHistorico.getDtExame() );
@@ -123,54 +132,63 @@ public class VisualizaGrafico extends AppCompatActivity {
 
                                 }
 
-                                LineDataSet resultados = new LineDataSet( vlResultados, "Resultado" );
-                                LineDataSet limiteSuperior = new LineDataSet( vlLimiteSup, "Limite Sup." );
-                                LineDataSet limiteInferior = new LineDataSet( vlLimiteInf, "Limite Inf." );
+                                if( !vlResultados.isEmpty() ){
 
-                                resultados.setFillAlpha(110);
-                                resultados.setColor(Color.GREEN);
-                                resultados.setLineWidth(7f);
-                                resultados.setValueTextSize(15f);
+                                    LineDataSet resultados = new LineDataSet( vlResultados, "Resultado em " + exameSelecionado.getDsMedida() );
+                                    LineDataSet limiteSuperior = new LineDataSet( vlLimiteSup, "Limite Sup." );
+                                    LineDataSet limiteInferior = new LineDataSet( vlLimiteInf, "Limite Inf." );
 
-                                limiteSuperior.setFillAlpha(110);
-                                limiteSuperior.setColor(Color.RED);
-                                limiteSuperior.setLineWidth(5f);
-                                limiteSuperior.setValueTextSize(12f);
+                                    resultados.setFillAlpha(110);
+                                    resultados.setColor(Color.GREEN);
+                                    resultados.setLineWidth(7f);
+                                    resultados.setValueTextSize(15f);
 
-                                limiteInferior.setFillAlpha(110);
-                                limiteInferior.setColor(Color.RED);
-                                limiteInferior.setLineWidth(5f);
-                                limiteInferior.setValueTextSize(12f);
+                                    limiteSuperior.setFillAlpha(110);
+                                    limiteSuperior.setColor(Color.RED);
+                                    limiteSuperior.setLineWidth(5f);
+                                    limiteSuperior.setValueTextSize(12f);
 
-                                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-                                dataSets.add( resultados );
-                                dataSets.add( limiteSuperior );
-                                dataSets.add( limiteInferior );
+                                    limiteInferior.setFillAlpha(110);
+                                    limiteInferior.setColor(Color.RED);
+                                    limiteInferior.setLineWidth(5f);
+                                    limiteInferior.setValueTextSize(12f);
 
-                                LineData data = new LineData( dataSets );
-                                data.setValueTextSize(12f);
-                                grafico.setData(data);
+                                    ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                                    dataSets.add( resultados );
+                                    dataSets.add( limiteSuperior );
+                                    dataSets.add( limiteInferior );
 
-                                XAxis x = grafico.getXAxis();
-                                x.setEnabled(true);
-                                x.setSpaceMax(vlResultados.size());
-                                x.setSpaceMin(vlResultados.size());
-                                x.setValueFormatter(new IAxisValueFormatter() {
-                                    @Override
-                                    public String getFormattedValue(float value, AxisBase axis) {
-                                        return legendaX.get( (int) value );
-                                    }
-                                });
+                                    LineData data = new LineData( dataSets );
+                                    data.setValueTextSize(12f);
+                                    grafico.setData(data);
+
+                                    XAxis x = grafico.getXAxis();
+                                    x.setGranularity(1f);
+                                    x.setValueFormatter(new IAxisValueFormatter() {
+                                        @Override
+                                        public String getFormattedValue(float value, AxisBase axis) {
+                                            Log.d("TAMANHO", "value: " + value + " Axis: " + axis);
+
+                                            if( value < 0  ){
+                                                value = 0;
+                                            }
+
+                                            if( value < legendaX.size() ){
+                                                return legendaX.get((int) value);
+                                            } else {
+                                                return "";
+                                            }
+
+                                        }
+                                    });
+
+                                }
 
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {}
                         });
-
-                        //TODO fim
-
-                        Toast.makeText( VisualizaGrafico.this, "Selecionei " + parent.getSelectedItem() + ", vou gerar o gráfico", Toast.LENGTH_LONG ).show();
                     }
 
                     @Override

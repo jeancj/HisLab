@@ -89,11 +89,11 @@ public class CadastroHistorico extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                ArrayList<String> arrayExames = new ArrayList<String>();
+                ArrayList<Exame> arrayExames = new ArrayList<Exame>();
 
                 for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
                     Exame dadosExame = postSnapshot.getValue( Exame.class );
-                    arrayExames.add( dadosExame.getDsExame() );
+                    arrayExames.add( dadosExame );
                 }
 
                 spExameHistorico = new Spinner( CadastroHistorico.this );
