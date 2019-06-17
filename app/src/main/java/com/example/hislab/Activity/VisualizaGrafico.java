@@ -46,6 +46,11 @@ public class VisualizaGrafico extends AppCompatActivity {
     private Spinner spExameGrafico;
     private LineChart grafico;
 
+    ArrayList<String> legendaX;
+    ArrayList<Entry> vlResultados;
+    ArrayList<Entry> vlLimiteSup;
+    ArrayList<Entry> vlLimiteInf;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,15 +98,20 @@ public class VisualizaGrafico extends AppCompatActivity {
                                 grafico.setDragEnabled(true);
                                 grafico.setScaleEnabled(false);
 
-                                final ArrayList<String> legendaX = new ArrayList<>();
-                                ArrayList<Entry> vlResultados = new ArrayList<>();
-                                ArrayList<Entry> vlLimiteSup = new ArrayList<>();
-                                ArrayList<Entry> vlLimiteInf = new ArrayList<>();
+//                                final ArrayList<String> legendaX = new ArrayList<>();
+//                                ArrayList<Entry> vlResultados = new ArrayList<>();
+//                                ArrayList<Entry> vlLimiteSup = new ArrayList<>();
+//                                ArrayList<Entry> vlLimiteInf = new ArrayList<>();
 
-                                legendaX.clear();
-                                vlResultados.clear();
-                                vlLimiteSup.clear();
-                                vlLimiteInf.clear();
+                                legendaX = new ArrayList<>();
+                                vlResultados = new ArrayList<>();
+                                vlLimiteSup = new ArrayList<>();
+                                vlLimiteInf = new ArrayList<>();
+
+//                                legendaX.clear();
+//                                vlResultados.clear();
+//                                vlLimiteSup.clear();
+//                                vlLimiteInf.clear();
                                 int index = 0;
 
                                 for( DataSnapshot postSnapshot : dataSnapshot.getChildren() ){
@@ -182,6 +192,12 @@ public class VisualizaGrafico extends AppCompatActivity {
                                         }
                                     });
 
+                                } else {
+                                    ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                                    LineData data = new LineData( dataSets );
+                                    data.setValueTextSize(12f);
+                                    grafico.setData(data);
+//                                    Toast.makeText(VisualizaGrafico.this, "Não foram encontrados históricos para o exame selecionado", Toast.LENGTH_LONG).show();
                                 }
 
                             }
